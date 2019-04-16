@@ -1,0 +1,117 @@
+mysql> SELECT firstname, lastname, age FROM Person;
++-------------+---------------+-----+
+| firstname   | lastname      | age |
++-------------+---------------+-----+
+| Arthur      | Pendragon     |  35 |
+| Guenièvre   | NULL          |  30 |
+| Merlin      | NULL          | 850 |
+| Perceval    | NULL          |  36 |
+| Caradoc     | NULL          |  32 |
+| Calogrenant | NULL          |  44 |
+| Leodagan    | NULL          |  47 |
+| Lancelot    | Du Lac        |  33 |
+| Elias       | De Kelliwic'h |  52 |
+| Mevanwi     |               |  28 |
+| Yvain       |               |  23 |
++-------------+---------------+-----+
+11 rows in set (0.00 sec)
+
+mysql> SELECT firstname, lastname, k.name FROM Person p JOIN Kingdom k ON p.kingdom_id = k.id;
++-------------+-----------+-----------+
+| firstname   | lastname  | name      |
++-------------+-----------+-----------+
+| Arthur      | Pendragon | Logre     |
+| Calogrenant | NULL      | Caledonie |
+| Guenièvre   | NULL      | Carmelide |
+| Leodagan    | NULL      | Carmelide |
+| Yvain       |           | Carmelide |
+| Caradoc     | NULL      | Vannes    |
+| Mevanwi     |           | Vannes    |
+| Perceval    | NULL      | Galles    |
++-------------+-----------+-----------+
+8 rows in set (0.01 sec)
+
+mysql> SELECT firstname, lastname, k.name FROM Person p LEFT JOIN Kingdom k ON p.kingdom_id = k.id;
++-------------+---------------+-----------+
+| firstname   | lastname      | name      |
++-------------+---------------+-----------+
+| Arthur      | Pendragon     | Logre     |
+| Guenièvre   | NULL          | Carmelide |
+| Merlin      | NULL          | NULL      |
+| Perceval    | NULL          | Galles    |
+| Caradoc     | NULL          | Vannes    |
+| Calogrenant | NULL          | Caledonie |
+| Leodagan    | NULL          | Carmelide |
+| Lancelot    | Du Lac        | NULL      |
+| Elias       | De Kelliwic'h | NULL      |
+| Mevanwi     |               | Vannes    |
+| Yvain       |               | Carmelide |
++-------------+---------------+-----------+
+11 rows in set (0.00 sec)
+
+
+mysql> SELECT AVG(age) as age_moyen FROM Person;
++-----------+
+| age_moyen |
++-----------+
+|  110.0000 |
++-----------+
+1 row in set (0.01 sec)
+
+mysql> SELECT k.name, COUNT(kingdom_id) as personnes_par_royaume FROM Person p RIGHT JOIN Kingdom k ON p.kingdom_id = k.id GROUP BY k.name;
++-----------+-----------------------+
+| name      | personnes_par_royaume |
++-----------+-----------------------+
+| Aquitaine |                     0 |
+| Caledonie |                     1 |
+| Carmelide |                     3 |
+| Galles    |                     1 |
+| Logre     |                     1 |
+| Vannes    |                     2 |
++-----------+-----------------------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT AVG(age), role FROM Person p JOIN Role r on r.id = p.role_id GROUP BY role;
++----------+-----------+
+| AVG(age) | role      |
++----------+-----------+
+|  31.0000 | chevalier |
+| 451.0000 | magicien  |
+|  42.0000 | roi       |
++----------+-----------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT AVG(age) FROM Person p JOIN Role r on r.id = p.role_id WHERE role != 'magicien';
++----------+
+| AVG(age) |
++----------+
+|  35.7143 |
++----------+
+1 row in set (0.00 sec)
+
+mysql> SELECT firstname, lastname, role, k.name FROM Person p LEFT JOIN Role r ON p.role_id = r.id LEFT JOIN Kingdom k ON k.id = p.kingdom_id ;
++-------------+---------------+-----------+-----------+
+| firstname   | lastname      | role      | name      |
++-------------+---------------+-----------+-----------+
+| Arthur      | Pendragon     | roi       | Logre     |
+| Calogrenant | NULL          | roi       | Caledonie |
+| Leodagan    | NULL          | roi       | Carmelide |
+| Perceval    | NULL          | chevalier | Galles    |
+| Caradoc     | NULL          | chevalier | Vannes    |
+| Lancelot    | Du Lac        | chevalier | NULL      |
+| Yvain       |               | chevalier | Carmelide |
+| Merlin      | NULL          | magicien  | NULL      |
+| Elias       | De Kelliwic'h | magicien  | NULL      |
+| Guenièvre   | NULL          | NULL      | Carmelide |
+| Mevanwi     |               | NULL      | Vannes    |
++-------------+---------------+-----------+-----------+
+11 rows in set (0.00 sec)
+
+mysql> SELECT k.name as kingdom, count(p.id) as sujets FROM Person p JOIN Kingdom k on k.id = p.kingdom_id GROUP BY kingdom HAVING sujets >= 2;
++-----------+--------+
+| kingdom   | sujets |
++-----------+--------+
+| Carmelide |      3 |
+| Vannes    |      2 |
++-----------+--------+
+2 rows in set (0.00 sec)
